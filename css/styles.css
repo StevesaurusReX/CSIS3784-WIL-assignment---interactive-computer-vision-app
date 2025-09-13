@@ -1,0 +1,76 @@
+body.laser-bg {
+    background: url('../images/retro_background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    min-height: 100vh;
+}
+
+.laser-title {
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    color: #5cecff;
+    /* text-shadow: 0 0 10px #00ffe7, 0 0 20px #0ff; */
+}
+
+.laser-desc {
+    color: #ff61c6ff;
+    /* text-shadow: 0 0 5px #ff61c6ff;  */
+    font-size: 1.4em;
+    margin-bottom: 20px;
+}
+
+.laser-btn {
+    background: linear-gradient(90deg, #ff61c6ff 0%, #5cecff 100%);
+    color: #18182a;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 0 5px #5cecff, 0 0 10px #ff61c6ff;
+    transition: transform 0.1s;
+}
+.laser-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #5cecff 0%, #ff61c6ff 100%);
+    color: #fff;
+}
+
+.laser-subtitle {
+    color: #5cecff;
+    /* text-shadow: 0 0 8px #5cecff; */
+}
+
+.laser-list li {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    /* text-shadow: 0 0 5px #5cecff; */
+}
+
+/* Retro neon scoreboard table */
+.table.laser-table {
+    background: #0a0c37ff;
+    color: #5cecff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #5cecff, 0 0 15px #ff61c6ff;
+    overflow: hidden;
+}
+
+.table.laser-table th,
+.table.laser-table td {
+    border: none;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    font-size: 1.1em;
+    /* text-shadow: 0 0 5px #5cecff; */
+}
+
+.table.laser-table thead {
+    background: linear-gradient(90deg, #5cecff 0%, #ff61c6ff 100%);
+    color: #0a0c37ff;
+    text-shadow: none;
+}
+
+.table.laser-table tbody tr {
+    transition: background 0.2s;
+}
+
+.table.laser-table tbody tr:hover {
+    background: #2a2a40;
+    color: #ff61c6ff;
+}
