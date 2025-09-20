@@ -5,6 +5,26 @@ body.laser-bg {
     min-height: 100vh;
 }
 
+#name {
+    background: rgba(24, 24, 42, 0.85);
+    color: #ff61c6ff;
+    border: 2px solid #ff61c6ff;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 1.2em;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    margin-bottom: 18px;
+    outline: none;
+    box-shadow: 0 0 10px #5cecff, 0 0 20px #ff61c6ff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#name:focus {
+    border-color: #5cecff;
+    box-shadow: 0 0 16px #5cecff, 0 0 32px #ff61c6ff;
+    background: rgba(24, 24, 42, 1);
+}
+
 .laser-title {
     font-family: 'Orbitron', 'Arial Black', sans-serif;
     color: #5cecff;
@@ -21,6 +41,18 @@ body.laser-bg {
 }
 
 .laser-btn {
+    background: linear-gradient(90deg, #ff61c6ff 0%, #5cecff 100%);
+    color: #18182a;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 0 5px #5cecff, 0 0 10px #ff61c6ff;
+    transition: transform 0.1s;
+    /* Styling to space btnss more */
+    padding: 12px 24px;
+    margin: 8px;
+    border-radius: 8px;
+}
+.spectator-laser-btn {
     background: linear-gradient(90deg, #ff61c6ff 0%, #5cecff 100%);
     color: #18182a;
     font-weight: bold;
@@ -151,3 +183,4 @@ body.laser-bg {
     width: 60px;
     height: 60px;
 }
+

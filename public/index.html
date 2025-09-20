@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
    </head>
 
-  <body>
+  <body class="laser-bg">
       <video
     id="video"
     autoplay
@@ -41,34 +41,34 @@
 
     <!-- LOBBY VIEW -->
     <div class="lobby-view">
-      <div class="container">
-        <h2>Laser Tag CSIS3784</h2>
+      <div class="container py-5 text-center">
+        <h2 class="laser-title">Laser Tag CSIS3784</h2>
 
         <div class="join-section">
           <input id="name" placeholder="Enter your name" maxlength="10" />
 
-          <button class="join-btn" onclick="joinLobby('player')">
+          <button class="join-btn laser-btn" onclick="joinLobby('player')">
             Join As Player
           </button>
-          <button class="spectator-join-btn" onclick="joinLobby('spectator')">
+          <button class="spectator-join-btn laser-btn" onclick="joinLobby('spectator')">
             Join As Spectator
           </button>
         </div>
 
-        <div class="lobby-stats">
-          <div class="stat-item">
+        <div class="lobby-stats row justify-content-center">
+          <div class="stat-item col-sm col-md-3 mb-3">
             <div>Players Online</div>
             <div id="player-count">0</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-item col-sm col-sm-3 mb-3">
             <div>Spectators</div>
             <div id="spectator-count">0</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-item col-sm col-sm-3 mb-3">
             <div>Status</div>
             <div id="lobby-status">Waiting...</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-item col-sm col-sm-3 mb-3">
             <div>Ready</div>
             <div id="ready-count">0</div>
           </div>
@@ -98,12 +98,12 @@
         </div>
         <div class="columns-container">
           <div class="column">
-            <h3>🏆 Players</h3>
+            <h3 class="laser-subtitle">🏆 Players</h3>
             <ul id="players-list" class="players-list"></ul>
           </div>
 
           <div class="column">
-            <h3>👀 Spectators</h3>
+            <h3 class="laser-subtitle">👀 Spectators</h3>
             <ul id="spectators-list" class="spectators-list"></ul>
 
             <div
