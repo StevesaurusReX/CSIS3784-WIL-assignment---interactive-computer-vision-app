@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laser Tag CSIS3784</title>
+     <!-- My CSS --> 
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+   </head>
+
+  <body>
+      <video
+    id="video"
+    autoplay
+    muted
+    playsinline
+    style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -2;
+    "
+  ></video>
+  <canvas
+    id="canvas"
+    style="
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    "
+  ></canvas>
+
+    <!-- LOBBY VIEW -->
+    <div class="lobby-view">
+      <div class="container">
+        <h2>Laser Tag CSIS3784</h2>
+
+        <div class="join-section">
+          <input id="name" placeholder="Enter your name" maxlength="10" />
+
+          <button class="join-btn" onclick="joinLobby('player')">
+            Join As Player
+          </button>
+          <button class="spectator-join-btn" onclick="joinLobby('spectator')">
+            Join As Spectator
+          </button>
+        </div>
+
+        <div class="lobby-stats">
+          <div class="stat-item">
+            <div>Players Online</div>
+            <div id="player-count">0</div>
+          </div>
+          <div class="stat-item">
+            <div>Spectators</div>
+            <div id="spectator-count">0</div>
+          </div>
+          <div class="stat-item">
+            <div>Status</div>
+            <div id="lobby-status">Waiting...</div>
+          </div>
+          <div class="stat-item">
+            <div>Ready</div>
+            <div id="ready-count">0</div>
+          </div>
+        </div>
+
+        <div
+          class="ready-section"
+          id="player-ready-section"
+          style="display: none"
+        >
+          <button
+            class="ready-btn"
+            id="player-ready-btn"
+            onclick="toggleReady()"
+          >
+            Ready for Battle!
+          </button>
+          <button
+            class="start-btn"
+            disabled="true"
+            style="display: none"
+            id="player-start-btn"
+            onclick="triggerStart()"
+          >
+            Start Battle!
+          </button>
+        </div>
+        <div class="columns-container">
+          <div class="column">
+            <h3>🏆 Players</h3>
+            <ul id="players-list" class="players-list"></ul>
+          </div>
+
+          <div class="column">
+            <h3>👀 Spectators</h3>
+            <ul id="spectators-list" class="spectators-list"></ul>
+
+            <div
+              class="ready-section"
+              id="spectator-ready-section"
+              style="display: none"
+            >
+              <button
+                class="ready-btn"
+                id="spectator-ready-btn"
+                onclick="toggleReady()"
+              >
+                Ready to Spectate!
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYER VIEW -->
+    <div class="player-view" style="display: none">
+      <!-- Reticle for targeting - starts as pistol by default -->
+      <div class="reticle pistol"></div>
+      
+      <!-- Toast notifications for various game events -->
+      <div class="toast-notification" style="display: none">
+        You are invisible
+      </div>
+      
+      <!-- Shutter button for scanning/shooting -->
+      <button
+        id="shutterBtn"
+        style="
+          position: fixed;
+          right: 50%;
+          bottom: 4rem;
+          transform: translateX(50%);
+          width: 70px;
+          height: 70px;
+          border-radius: 50%;
+          background: red;
+          border: none;
+          cursor: pointer;
+          z-index: 5;
+        "
+        disabled
+        title="Scan markers to shoot, change weapons, or get power-ups"
+      >📸</button>
+      
+      <!-- Player stats UI -->
+      <div class="score-section">
+        <span class="score-amount">💰 0</span>
+      </div>
+      
+      <div class="rank-section">
+        <ul class="rank-list"></ul>
+      </div>
+      
+      <div class="health-section">
+        <span>🩷</span>
+        <div class="health-bar">
+          <span class="health-fill" style="width: 100%"></span>
+          <span class="health-amount">100/100</span>
+        </div>
+      </div>
+
+      <div class="weapon-section">
+        <img
+          src=""
+          class="weapon-icon"
+          style="width: 1.5rem; height: 1.5rem; object-fit: cover"
+          alt="Current weapon"
+        />
+        <span class="weapon">PISTOL</span>
+      </div>
+
+      <div class="powerUp-section">
+        <span class="powerUp-icon" style="width: 1.5rem; height: 1.5rem"></span>
+        <span class="powerUp"></span>
+      </div>
+    </div>
+
+    <!-- SPECTATOR VIEW -->
+    <div class="spectator-view" style="display: none">
+      <div class="spectator-container">
+        <div class="spectator-header">
+          <h2 id="spectator-title">Spectator View</h2>
+          <span id="spectator-count"></span>
+        </div>
+
+        <!-- Live leaderboard fills most of the page -->
+        <div class="leaderboard-section">
+          <h3>🏆 Live Leaderboard</h3>
+          <div id="leaderboard" class="leaderboard">
+            <ul class="leaderboard-list">
+              <li class="">
+                <span class="">#</span>
+                <span>Name</span>
+                <span>Tags</span>
+                <span>Points</span>
+                <span>Weapon</span>
+                <span>Power up</span>
+                <span>Health</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Global stats -->
+        <div class="game-stats">
+          <div class="stat-item">
+            <div class="stat-label">Total Tags</div>
+            <div id="total-tags" class="stat-value">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Active Players</div>
+            <div id="active-players" class="stat-value">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Eliminated</div>
+            <div id="eliminated-players" class="stat-value">0</div>
+          </div>
+        </div>
+        <!-- Live feed panel -->
+        <div class="live-feed">
+          <h3>Live Feed</h3>
+          <ul id="live-feed-list"></ul>
+        </div>
+      </div>
+      <div class="rules-container">
+        <h3>Rules</h3>
+        <ul class="rules-list">
+          <li>
+            🔫 Tag opponents by scanning their marker &amp; pressing Shoot.
+          </li>
+          <li>🎯 Each tag = 10 pts (×2 when multiplier is active).</li>
+          <li>
+            🔧 Switch weapons (Pistol, Shotgun, Sniper) for different damage.
+          </li>
+          <li>🛡️ Power-ups: Health Pack, Invisibility, Score Multiplier.</li>
+          <li>💎 Find treasure for a 50-pt bonus.</li>
+          <li>🏆 Win by last one standing or first to 20 tags.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- END SCREEN -->
+    <div class="end-screen" style="display: none">
+      <h1>Game Over</h1>
+      <p class="end-screen-text"></p>
+      <p class="countdown-text"></p>
+    </div>
+
+    <!-- DEATH SCREEN -->
+    <div class="death-screen" style="display: none">
+      <h1>Pew Pew, You're dead 😵🪦</h1>
+      <p class="death-screen-text"></p>
+    </div>
+
+<!-- Debug Panel for Development -->
+<div id="debug-panel" style="
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 12px;
+  z-index: 1000;
+  max-width: 300px;
+  display: none;
+">
+  <div><strong>Debug Info:</strong></div>
+  <div>Game State: <span id="debug-gamestate">loading</span></div>
+  <div>Player ID: <span id="debug-playerid">none</span></div>
+  <div>Symbol: <span id="debug-symbol">none</span></div>
+  <div>Camera: <span id="debug-camera">initializing</span></div>
+  <div>Detection: <span id="debug-detection">waiting</span></div>
+  <button onclick="toggleDebugPanel()" style="margin-top: 5px; font-size: 10px;">Hide Debug</button>
+</div>
+
+<!-- Toggle Debug Button -->
+<button onclick="toggleDebugPanel()" style="
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 999;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+" id="debug-toggle">Debug</button>
+
+<!-- scripts -->
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+
+<!-- Computer Vision libraries first -->
+<script src="cv.js"></script>
+<script src="aruco.js"></script>
+
+<!-- Core game files - detection.js must load before lobby.js NB -->
+<script src="detection.js"></script>
+<script src="lobby.js"></script>
+<script src="music.js"></script>
+<script src="sounds.js"></script>
+<script src="game.js"></script>
+
+<!-- Debug helper scripts for debugging viewss  -->
+<script>
+// Debug panel functionality click on the btn for info 
+function toggleDebugPanel() {
+  const panel = document.getElementById('debug-panel');
+  const toggle = document.getElementById('debug-toggle');
+  
+  if (panel.style.display === 'none' || panel.style.display === '') {
+    panel.style.display = 'block';
+    toggle.style.display = 'none';
+  } else {
+    panel.style.display = 'none';
+    toggle.style.display = 'block';
+  }
+}
+
+// Update debug info
+function updateDebugInfo(type, value) {
+  const element = document.getElementById('debug-' + type);
+  if (element) {
+    element.textContent = value;
+    element.style.color = value === 'error' ? '#ff6b6b' : 
+                         value === 'ready' ? '#51cf66' : 
+                         '#74c0fc';
+  }
+}
+
+// Enhanced console logging with debug panel updates
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+const originalConsoleWarn = console.warn;
+
+console.log = function(...args) {
+  originalConsoleLog.apply(console, args);
+  
+  // Update debug panel based on log messages
+  const message = args.join(' ');
+  if (message.includes('🎮 Start game event received')) {
+    updateDebugInfo('gamestate', 'starting');
+  } else if (message.includes(' Camera started successfully')) {
+    updateDebugInfo('camera', 'ready');
+  } else if (message.includes(' Received symbol:')) {
+    const symbol = message.split(':')[1]?.trim();
+    updateDebugInfo('symbol', symbol || 'received');
+  } else if (message.includes(' Detection initialized successfully')) {
+    updateDebugInfo('detection', 'ready');
+  }
+};
+
+console.error = function(...args) {
+  originalConsoleError.apply(console, args);
+  
+  const message = args.join(' ');
+  if (message.includes('Camera')) {
+    updateDebugInfo('camera', 'error');
+  } else if (message.includes('Detection') || message.includes('ArUco')) {
+    updateDebugInfo('detection', 'error');
+  }
+};
+
+console.warn = function(...args) {
+  originalConsoleWarn.apply(console, args);
+  
+  const message = args.join(' ');
+  if (message.includes('Camera')) {
+    updateDebugInfo('camera', 'warning');
+  }
+};
+
+// Initialize debug info on page load
+document.addEventListener('DOMContentLoaded', function() {
+  updateDebugInfo('gamestate', 'lobby');
+  updateDebugInfo('camera', 'initializing');
+  updateDebugInfo('detection', 'waiting');
+});
+
+// Add error boundary for uncaught errors
+window.addEventListener('error', function(e) {
+  console.error('Uncaught error:', e.error);
+  updateDebugInfo('gamestate', 'error');
+});
+
+// Check if all required files are loaded
+window.addEventListener('load', function() {
+  let missingFiles = [];
+  
+  if (typeof io === 'undefined') missingFiles.push('socket.io');
+  if (typeof CV === 'undefined') missingFiles.push('cv.js');
+  if (typeof AR === 'undefined') missingFiles.push('aruco.js');
+  
+  if (missingFiles.length > 0) {
+    console.error(' Missing files:', missingFiles.join(', '));
+    alert('Some required files failed to load: ' + missingFiles.join(', ') + 
+          '\nPlease refresh the page or check your internet connection.');
+  } else {
+    console.log('All required libraries loaded successfully');
+  }
+});
+</script>
+    
+  </body>
+</html>
