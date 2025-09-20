@@ -184,3 +184,78 @@ body.laser-bg {
     height: 60px;
 }
 
+/* Leaderboard Section Styling */
+.leaderboard-section {
+    background: rgba(24, 24, 42, 0.85);
+    border-radius: 18px;
+    box-shadow: 0 0 24px #5cecff, 0 0 32px #ff61c6ff;
+    padding: 32px 16px;
+    margin: 0 auto 32px auto;
+    max-width: 900px;
+}
+
+.leaderboard-section h3 {
+    color: #5cecff;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    text-shadow: 0 0 8px #5cecff;
+    margin-bottom: 24px;
+    font-size: 2em;
+}
+
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.leaderboard-list li {
+    display: grid;
+    grid-template-columns: 40px 1.5fr 1fr 1fr 1fr 1fr 1fr;
+    align-items: center;
+    background: rgba(34, 34, 59, 0.95);
+    color: #fff;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    font-size: 1.1em;
+    border-bottom: 2px solid #5cecff;
+    padding: 12px 8px;
+    transition: background 0.2s;
+}
+
+.leaderboard-list li:first-child {
+    background: linear-gradient(90deg, #5cecff 0%, #ff61c6ff 100%);
+    color: #18182a;
+    font-weight: bold;
+    text-shadow: none;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 3px solid #ff61c6ff;
+}
+
+.leaderboard-list li:not(:first-child):hover {
+    background: rgba(255, 46, 99, 0.15);
+    color: #ff61c6ff;
+}
+
+.leaderboard-list span {
+    text-align: center;
+    padding: 0 4px;
+    text-shadow: 0 0 6px #5cecff;
+}
+
+@media (max-width: 700px) {
+    .leaderboard-section {
+        padding: 16px 2px;
+        max-width: 98vw;
+    }
+    .leaderboard-list li {
+        font-size: 0.95em;
+        grid-template-columns: 28px 1fr 1fr 1fr 1fr 1fr 1fr;
+        padding: 8px 2px;
+    }
+}
+
+.game-stats,
+.game-stats .stat-label,
+.game-stats .stat-value {
+    color: #fff !important;
+}

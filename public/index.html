@@ -188,10 +188,10 @@
     </div>
 
     <!-- SPECTATOR VIEW -->
-    <div class="spectator-view" style="display: none">
+    <div class="spectator-view py-5 text-center" style="display: none;">
       <div class="spectator-container">
         <div class="spectator-header">
-          <h2 id="spectator-title">Spectator View</h2>
+          <h2 id="spectator-title" class="laser-title">Spectator View</h2>
           <span id="spectator-count"></span>
         </div>
 
@@ -214,16 +214,16 @@
         </div>
 
         <!-- Global stats -->
-        <div class="game-stats">
-          <div class="stat-item">
+        <div class="game-stats lead laser-desc mb-4 row">
+          <div class="stat-item col-md-3">
             <div class="stat-label">Total Tags</div>
             <div id="total-tags" class="stat-value">0</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-item col-md-3">
             <div class="stat-label">Active Players</div>
             <div id="active-players" class="stat-value">0</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-item col-md-3">
             <div class="stat-label">Eliminated</div>
             <div id="eliminated-players" class="stat-value">0</div>
           </div>
@@ -236,7 +236,7 @@
       </div>
       <div class="rules-container">
         <h3>Rules</h3>
-        <ul class="rules-list">
+        <ul class="rules-list laser-list mx-auto" style="max-width: 400px;">
           <li>
             🔫 Tag opponents by scanning their marker &amp; pressing Shoot.
           </li>
