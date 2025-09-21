@@ -259,3 +259,42 @@ body.laser-bg {
 .game-stats .stat-value {
     color: #fff !important;
 }
+
+/* End Screen Styling */
+.end-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(24, 24, 42, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    color: #fff;
+    text-align: center;
+    box-shadow: 0 0 40px #08d9d6, 0 0 80px #ff2e63;
+}
+
+.end-screen h1 {
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    color: #00ffe7;
+    font-size: 3em;
+    margin-bottom: 24px;
+    text-shadow: 0 0 16px #08d9d6, 0 0 32px #ff2e63;
+}
+
+.end-screen-text {
+    color: #ff2e63;
+    font-size: 1.5em;
+    margin-bottom: 18px;
+    text-shadow: 0 0 8px #ff2e63;
+}
+
+.countdown-text {
+    color: #08d9d6;
+    font-size: 1.2em;
+    margin-top: 12px;
+    text-shadow: 0 0 8px #08d9d6;
+}
