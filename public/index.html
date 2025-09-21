@@ -124,8 +124,14 @@
       </div>
     </div>
 
-    <!-- PLAYER VIEW -->
+   <!-- PLAYER VIEW -->
     <div class="player-view" style="display: none">
+      <!-- Crosshair overlay -->
+      <div class="test-player-viewport">
+        <div class="crosshair-horizontal"></div>
+        <div class="crosshair-vertical"></div>
+      </div>
+      
       <!-- Reticle for targeting - starts as pistol by default -->
       <div class="reticle pistol"></div>
       
@@ -152,7 +158,14 @@
         "
         disabled
         title="Scan markers to shoot, change weapons, or get power-ups"
-      >📸</button>
+      >
+        <img
+          src="images/icons/small_bullet.png"
+          class="shutter-icon"
+          style="width: 50px; height: 50px; object-fit: cover"
+          alt="Shoot button"
+        />
+      </button>
       
       <!-- Player stats UI -->
       <div class="score-section">
@@ -175,10 +188,10 @@
         <img
           src=""
           class="weapon-icon"
-          style="width: 1.5rem; height: 1.5rem; object-fit: cover"
+          style="width: 150px; height: 150px; object-fit: cover"
           alt="Current weapon"
         />
-        <span class="weapon">PISTOL</span>
+        <span class="weapon" style="color: white; font-size: 40px;">PISTOL</span>
       </div>
 
       <div class="powerUp-section">
