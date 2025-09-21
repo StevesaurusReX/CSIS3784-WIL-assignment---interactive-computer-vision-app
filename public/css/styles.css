@@ -241,6 +241,9 @@ body.laser-bg {
     padding: 0 4px;
     text-shadow: 0 0 6px #5cecff;
 }
+.rank-section {
+  display: none !important;
+}
 
 @media (max-width: 700px) {
     .leaderboard-section {
