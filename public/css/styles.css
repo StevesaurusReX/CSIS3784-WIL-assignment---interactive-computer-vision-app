@@ -298,3 +298,35 @@ body.laser-bg {
     margin-top: 12px;
     text-shadow: 0 0 8px #08d9d6;
 }
+
+/* Death Screen Styling */
+.death-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(24, 24, 42, 0.97);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    color: #fff;
+    text-align: center;
+    box-shadow: 0 0 40px #08d9d6, 0 0 80px #ff2e63;
+}
+
+.death-screen h1 {
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    color: #ff2e63;
+    font-size: 2.7em;
+    margin-bottom: 24px;
+    text-shadow: 0 0 16px #ff2e63, 0 0 32px #08d9d6;
+}
+
+.death-screen-text {
+    color: #00ffe7;
+    font-size: 1.3em;
+    margin-bottom: 18px;
+    text-shadow: 0 0 8px #08d9d6;
+}
