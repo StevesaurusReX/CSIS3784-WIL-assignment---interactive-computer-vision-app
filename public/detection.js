@@ -12,33 +12,29 @@ let myId = null;
 let detector = null;
 
 function initializeDetection() {
-  console.log("🔍 Initializing detection system...");
-  
   // Check if required elements exist
-  if (!video) {
-    console.error("❌ Video element not found");
-    return;
-  }
-  if (!canvas) {
-    console.error("❌ Canvas element not found");
-    return;
-  }
-  if (!shutterBtn) {
-    console.error("❌ Shutter button not found");
+  if (!video || !canvas || !shutterBtn) {
+    console.error("Required DOM elements not found");
     return;
   }
 
   // Check if ArUco detector is available
   if (typeof AR === 'undefined' || !AR.Detector) {
-    console.error("❌ ArUco library not loaded");
+    console.error("ArUco library not loaded");
+    return;
+  }
+  
+  if (typeof CV === 'undefined') {
+    console.error("CV library not loaded");
     return;
   }
 
   try {
+    // Create detector with standard ARUCO dictionary (as in working version)
     detector = new AR.Detector();
-    console.log("✅ ArUco detector created");
+    console.log("ArUco detector initialized");
   } catch (error) {
-    console.error("❌ Failed to create ArUco detector:", error);
+    console.error("Failed to create ArUco detector:", error);
     return;
   }
 
@@ -46,33 +42,30 @@ function initializeDetection() {
   
   getCameras()
     .then(() => {
-      console.log("✅ Camera initialization completed");
+      console.log("Camera initialized");
     })
     .catch((error) => {
-      console.error("❌ Camera initialization failed:", error);
+      console.error("Camera initialization failed:", error);
     });
     
   setupShutterListener();
 
-  socket.emit("request_symbol");
-  socket.on("your_symbol", ({ symbol }) => {
-    console.log("🆔 Received symbol:", symbol);
-    myId = symbol;
-    shutterBtn.disabled = false;
-    console.log("✅ Shutter button enabled");
-  });
+  // Request symbol from server
+  if (typeof socket !== 'undefined' && socket.connected) {
+    socket.emit("request_symbol");
+    socket.on("your_symbol", ({ symbol }) => {
+      myId = symbol;
+      shutterBtn.disabled = false;
+    });
+  }
 }
 
 async function getCameras() {
-  console.log("📹 Requesting camera access...");
-  
   try {
     // Test camera access first
     const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
     testStream.getTracks().forEach((t) => t.stop());
-    console.log("✅ Camera access granted");
   } catch (err) {
-    console.error("❌ Camera access denied:", err);
     alert("Camera access is required for this app. Please allow camera access and refresh the page.");
     throw err;
   }
@@ -80,12 +73,12 @@ async function getCameras() {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoInputs = devices.filter((d) => d.kind === "videoinput");
-    console.log("📷 Found cameras:", videoInputs.length);
     
     if (videoInputs.length === 0) {
       throw new Error("No cameras found");
     }
 
+    // Prefer back/rear cameras for AR
     const rearCams = videoInputs.filter((d) => {
       const label = d.label.toLowerCase();
       return (
@@ -96,18 +89,13 @@ async function getCameras() {
     });
 
     const camsToShow = rearCams.length > 0 ? rearCams : videoInputs;
-    console.log("🎯 Using camera:", camsToShow[0].label || "Unknown camera");
-
     await startCamera(camsToShow[0].deviceId);
   } catch (err) {
-    console.error("❌ Failed to enumerate cameras:", err);
     throw err;
   }
 }
 
 async function startCamera(deviceId) {
-  console.log("🎬 Starting camera...");
-  
   if (currentStream) {
     currentStream.getTracks().forEach((track) => track.stop());
   }
@@ -115,8 +103,10 @@ async function startCamera(deviceId) {
   try {
     const constraints = {
       video: { 
-        deviceId: { exact: deviceId },
-        facingMode: "environment" // Prefer back camera
+        deviceId: deviceId ? { exact: deviceId } : undefined,
+        facingMode: "environment",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
       },
       audio: false,
     };
@@ -130,16 +120,21 @@ async function startCamera(deviceId) {
       video.onloadedmetadata = () => {
         video.play()
           .then(() => {
-            console.log("✅ Camera started successfully");
             resolve();
           })
           .catch(reject);
       };
       video.onerror = reject;
+      
+      // Add timeout
+      setTimeout(() => {
+        if (video.readyState < 2) {
+          reject(new Error("Video loading timeout"));
+        }
+      }, 10000);
     });
     
   } catch (err) {
-    console.error("❌ Failed to start camera:", err);
     // Try fallback without exact device constraint
     try {
       const fallbackStream = await navigator.mediaDevices.getUserMedia({
@@ -148,68 +143,67 @@ async function startCamera(deviceId) {
       });
       currentStream = fallbackStream;
       video.srcObject = fallbackStream;
-      console.log("✅ Camera started with fallback constraints");
+      
+      return new Promise((resolve, reject) => {
+        video.onloadedmetadata = () => {
+          video.play().then(resolve).catch(reject);
+        };
+        video.onerror = reject;
+      });
     } catch (fallbackErr) {
-      console.error("❌ Fallback camera also failed:", fallbackErr);
       throw fallbackErr;
     }
   }
 }
 
 function setupShutterListener() {
-  console.log("🔫 Setting up shutter button listener");
-  
-  shutterBtn.addEventListener("click", () => {
-    console.log("📸 Shutter button clicked");
+  shutterBtn.addEventListener("click", (event) => {
+    event.preventDefault();
     
     // Check if we have our symbol
-    if (!myId) {
-      console.warn("🛑 Shoot blocked: symbol not assigned yet");
+    if (myId === null || myId === undefined) {
+      console.warn("Symbol not assigned yet");
       return;
     }
 
     // Check if detector is ready
     if (!detector) {
-      console.error("🛑 Shoot blocked: detector not initialized");
+      console.error("Detector not initialized");
       return;
     }
 
     // Check if video is ready
-    if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-      console.warn("🛑 Shoot blocked: video not ready");
+    if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+      console.warn("Video not ready");
       return;
     }
 
-    // Check if reticle exists
-    const reticle = document.querySelector(".reticle");
-    if (!reticle) {
-      console.error("🛑 Shoot blocked: reticle not found");
+    // Check video dimensions
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      console.warn("Video dimensions not available");
       return;
     }
 
     try {
       processFrame();
     } catch (error) {
-      console.error("❌ Error processing frame:", error);
+      console.error("Error processing frame:", error);
     }
   });
 }
 
 function processFrame() {
-  // Ensure canvas matches screen
+  // Canvas sizing
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  // Draw current video frame to canvas
   const ctx = canvas.getContext("2d");
-
   const vw = video.videoWidth;
   const vh = video.videoHeight;
   const sw = window.innerWidth;
   const sh = window.innerHeight;
 
   if (vw === 0 || vh === 0) {
-    console.warn("⚠️ Video dimensions not available yet");
     return;
   }
 
@@ -229,6 +223,7 @@ function processFrame() {
     sy = (vh - sHeight) / 2;
   }
 
+  // Draw video to canvas
   ctx.drawImage(
     video,
     sx,
@@ -241,8 +236,13 @@ function processFrame() {
     canvas.height
   );
 
-  // Reticle-based detection region
+  // Get reticle position
   const reticle = document.querySelector(".reticle");
+  if (!reticle) {
+    console.error("Reticle not found");
+    return;
+  }
+  
   const reticleRect = reticle.getBoundingClientRect();
 
   // Map to canvas scale
@@ -254,16 +254,17 @@ function processFrame() {
   const width = Math.floor(reticleRect.width * scaleX);
   const height = Math.floor(reticleRect.height * scaleY);
 
-  // Ensure bounds are valid
+  // Bounds check
   if (x < 0 || y < 0 || width <= 0 || height <= 0 || 
       x + width > canvas.width || y + height > canvas.height) {
-    console.warn("⚠️ Invalid detection region bounds");
     return;
   }
 
   try {
-    // Crop canvas region
+    // Get image data from the reticle area
     const imageData = ctx.getImageData(x, y, width, height);
+    
+    // Create temporary canvas for detection (as in working version)
     const tempCanvas = document.createElement("canvas");
     tempCanvas.width = width;
     tempCanvas.height = height;
@@ -273,38 +274,53 @@ function processFrame() {
     // Run ArUco detection
     const markers = detector.detect(tempCtx.getImageData(0, 0, width, height));
 
-    if (markers.length > 0) {
-      console.log(`🎯 Found ${markers.length} markers`);
+    if (markers && markers.length > 0) {
       markers.forEach((marker) => {
         const id = marker.id;
-        console.log("✅ Detected ArUco ID:", id);
+        console.log("Detected ArUco ID:", id);
 
+        // Process the detected marker
         if (id >= 0 && id <= 8) {
-          // It's a player
+          // It's a player symbol
           if (id !== myId) {
-            console.log("🔫 Shoot player with ID:", id);
             shootPlayer(id);
-          } else {
-            console.log("🚫 Ignored scanning self");
           }
         } else if (GUN_IDS.includes(id)) {
-          console.log("🔧 Change gun to ID:", id);
           changeGun(id);
         } else if (POWERUP_IDS.includes(id)) {
-          console.log("⚡ Power up with ID:", id);
           powerUp(id);
         } else if (id === TREASURE_ID) {
-          console.log("💎 Found treasure!");
           findTreasure();
-        } else {
-          console.log(`❓ Unknown ArUco ID ${id}`);
         }
       });
-    } else {
-      console.log("❌ No ArUco marker detected inside reticle");
     }
   } catch (error) {
-    console.error("❌ Error during ArUco detection:", error);
+    console.error("Error during ArUco detection:", error);
+  }
+}
+
+// Game action functions
+function shootPlayer(targetSymbol) {
+  if (typeof socket !== 'undefined' && socket.connected) {
+    socket.emit("shoot", targetSymbol);
+  }
+}
+
+function powerUp(targetSymbol) {
+  if (typeof socket !== 'undefined' && socket.connected) {
+    socket.emit("powerUp", targetSymbol);
+  }
+}
+
+function findTreasure() {
+  if (typeof socket !== 'undefined' && socket.connected) {
+    socket.emit("treasure_found");
+  }
+}
+
+function changeGun(targetSymbol) {
+  if (typeof socket !== 'undefined' && socket.connected) {
+    socket.emit("change_gun", targetSymbol);
   }
 }
 
@@ -312,6 +328,9 @@ function getMyArucoId() {
   const me = allPlayers.find((p) => p.id === socket.id);
   return me ? me.arucoId : -1;
 }
+
+// Make processFrame available globally for testing
+window.processFrame = processFrame;
 
 // Clean up when page unloads
 window.addEventListener("beforeunload", () => {

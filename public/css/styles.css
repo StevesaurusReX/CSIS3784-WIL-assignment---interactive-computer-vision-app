@@ -441,3 +441,83 @@ body.laser-bg {
     transition: width 0.3s;
     display: block;
 }
+
+/* Styles for the weapon UI bugs */
+.weapon-section {
+    position: fixed;
+    bottom: 30px;
+    left: 30px; /* Moved to bottom left instead of center */
+    z-index: 10;
+    background: rgba(10,12,55,0.7);
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #5cecff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 180px;
+}
+
+.weapon-icon {
+    width: 80px !important; /* Reduced from 150px */
+    height: 80px !important; /* Reduced from 150px */
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+
+.weapon {
+    color: #00ffe7;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    font-size: 1.1em !important; /* Reduced from 40px */
+    text-shadow: 0 0 8px #08d9d6;
+    text-align: center;
+}
+
+.powerUp-section {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 10;
+    background: rgba(10,12,55,0.7);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #5cecff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 120px;
+}
+
+.powerUp-icon {
+    font-size: 1.5em;
+}
+
+.powerUp {
+    color: #00ffe7;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    font-size: 1em;
+    text-shadow: 0 0 5px #08d9d6;
+}
+/* Toast notifications */
+.toast-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(24, 24, 42, 0.95);
+    color: #ff61c6ff;
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #5cecff, 0 0 30px #ff61c6ff;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    font-size: 1.2em;
+    text-align: center;
+    z-index: 20;
+    max-width: 300px;
+    border: 2px solid #5cecff;
+}
+
+.toast-notification-emoji {
+    font-size: 3em !important;
+    padding: 30px !important;
+}
