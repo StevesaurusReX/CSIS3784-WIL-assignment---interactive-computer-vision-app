@@ -405,10 +405,12 @@ window.findTreasure = findTreasure;
 window.changeGun = changeGun;
 const toggle = document.querySelector(".rules-toggle");
 const list = document.querySelector(".rules-list");
-const arrow = toggle.querySelector(".arrow");
+const arrow = toggle ? toggle.querySelector(".arrow") : null;
 
-toggle.addEventListener("click", () => {
-  const isCollapsed = list.classList.toggle("collapsed");
-  // adjust arrow
-  arrow.textContent = isCollapsed ? "▸" : "▾";
-});
+if (toggle && list && arrow) {
+  toggle.addEventListener("click", () => {
+    const isCollapsed = list.classList.toggle("collapsed");
+    // adjust arrow
+    arrow.textContent = isCollapsed ? "▸" : "▾";
+  });
+}
