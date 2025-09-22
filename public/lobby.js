@@ -73,19 +73,26 @@ socket.on("countdown", (seconds) => {
 });
 
 socket.on("start_game", (players) => {
-  console.log("🚨 CRITICAL: start_game event received");
-  console.log("My socket.id:", socket.id);
-  console.log("Players received:", players);
-  console.log("Players IDs:", players.map(p => p.id));
-  
   const current = getCurrentPlayer(players);
-  console.log("Current player found:", current);
-  
-  if (!current) {
-    console.error("❌ CRITICAL: Current player not found! Socket ID doesn't match any player.");
-    console.error("My socket.id:", socket.id);
-    console.error("Available player IDs:", players.map(p => p.id));
-    return;
+
+  // Only for players (not spectators)
+  if (current && !current.isSpectator) {
+    setTimeout(() => {
+      // Initialize detection
+      if (typeof initializeDetection === "function") {
+        initializeDetection();
+      }
+      // Request symbol
+      socket.emit("request_symbol");
+      socket.once("your_symbol", ({ symbol }) => {
+        console.log("Received symbol from server:", symbol);
+        window.myId = symbol;
+        const shutterBtn = document.getElementById('shutterBtn');
+        if (shutterBtn) shutterBtn.disabled = false;
+        updateDebugInfo('symbol', symbol);
+        updateDebugInfo('detection', 'ready');
+      });
+    }, 200);
   }
 
   // Update debug info

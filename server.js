@@ -194,7 +194,7 @@ io.on("connection", (socket) => {
     if (gameState == "lobby") {
       gameState = "countdown";
       //TODO: Drop countdown
-      let countdown = 1;
+      let countdown = 3;
 
       const countdownInterval = setInterval(() => {
         io.emit("countdown", countdown);

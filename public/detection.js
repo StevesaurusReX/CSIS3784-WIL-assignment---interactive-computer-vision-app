@@ -120,13 +120,13 @@ async function startCamera(deviceId) {
       video.onloadedmetadata = () => {
         video.play()
           .then(() => {
+            console.log("Camera started successfully"); // <-- KEY LINE
+            if (typeof updateDebugInfo === 'function') updateDebugInfo('camera', 'ready');
             resolve();
           })
           .catch(reject);
       };
       video.onerror = reject;
-      
-      // Add timeout
       setTimeout(() => {
         if (video.readyState < 2) {
           reject(new Error("Video loading timeout"));
@@ -146,7 +146,13 @@ async function startCamera(deviceId) {
       
       return new Promise((resolve, reject) => {
         video.onloadedmetadata = () => {
-          video.play().then(resolve).catch(reject);
+          video.play()
+            .then(() => {
+              console.log("Camera started successfully (fallback)");
+              if (typeof updateDebugInfo === 'function') updateDebugInfo('camera', 'ready');
+              resolve();
+            })
+            .catch(reject);
         };
         video.onerror = reject;
       });
@@ -202,6 +208,9 @@ function processFrame() {
   const vh = video.videoHeight;
   const sw = window.innerWidth;
   const sh = window.innerHeight;
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+const markers = detector.detect(imageData);
+console.log("Detected markers:", markers);
 
   if (vw === 0 || vh === 0) {
     return;
