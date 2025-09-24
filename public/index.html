@@ -99,6 +99,7 @@
         <div class="columns-container">
           <div class="column">
             <h3 class="laser-subtitle">🏆 Players</h3>
+            
             <ul id="players-list" class="players-list"></ul>
           </div>
 
@@ -264,86 +265,10 @@
       <p class="death-screen-text"></p>
     </div>
 
-<!-- Debug Panel for Development -->
-<div id="debug-panel" style="
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  font-family: monospace;
-  font-size: 12px;
-  z-index: 1000;
-  max-width: 300px;
-  display: none;
-">
-  <div><strong>Debug Info:</strong></div>
-  <div>Game State: <span id="debug-gamestate">loading</span></div>
-  <div>Player ID: <span id="debug-playerid">none</span></div>
-  <div>Symbol: <span id="debug-symbol">none</span></div>
-  <div>Camera: <span id="debug-camera">initializing</span></div>
-  <div>Detection: <span id="debug-detection">waiting</span></div>
-  <div>Video Ready: <span id="debug-video">waiting</span></div>
-  <div>Libraries: <span id="debug-libraries">loading</span></div>
-  <button onclick="toggleDebugPanel()" style="margin-top: 5px; font-size: 10px;">Hide Debug</button>
-</div>
 
-<!-- Toggle Debug Button -->
-<button onclick="toggleDebugPanel()" style="
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 999;
-  background: #333;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 3px;
-  font-size: 12px;
-  cursor: pointer;
-" id="debug-toggle">Debug</button>
 
-<!-- ArUco Test Markers for Testing (only visible in debug mode) -->
-<div id="test-markers" style="display: none; position: fixed; bottom: 10px; left: 10px; z-index: 1001; background: white; padding: 10px; border-radius: 5px;">
-  <h4>Test Markers</h4>
-  <div style="display: flex; gap: 10px;">
-    <!-- ArUco marker ID 1 (Player) -->
-    <div style="border: 2px solid black; padding: 5px;">
-      <svg width="60" height="60" viewBox="0 0 7 7">
-        <rect width="7" height="7" fill="white"/>
-        <rect x="1" y="1" width="5" height="5" fill="black"/>
-        <rect x="2" y="2" width="1" height="1" fill="white"/>
-        <rect x="3" y="2" width="1" height="1" fill="white"/>
-        <rect x="4" y="2" width="1" height="1" fill="white"/>
-        <rect x="2" y="3" width="1" height="1" fill="white"/>
-        <rect x="4" y="3" width="1" height="1" fill="white"/>
-        <rect x="2" y="4" width="1" height="1" fill="white"/>
-        <rect x="3" y="4" width="1" height="1" fill="white"/>
-        <rect x="4" y="4" width="1" height="1" fill="white"/>
-      </svg>
-      <div>ID: 1</div>
-    </div>
-    
-    <!-- ArUco marker ID 9 (Gun) -->
-    <div style="border: 2px solid black; padding: 5px;">
-      <svg width="60" height="60" viewBox="0 0 7 7">
-        <rect width="7" height="7" fill="white"/>
-        <rect x="1" y="1" width="5" height="5" fill="black"/>
-        <rect x="2" y="2" width="1" height="1" fill="white"/>
-        <rect x="4" y="2" width="1" height="1" fill="white"/>
-        <rect x="2" y="3" width="1" height="1" fill="white"/>
-        <rect x="3" y="3" width="1" height="1" fill="white"/>
-        <rect x="4" y="3" width="1" height="1" fill="white"/>
-        <rect x="2" y="4" width="1" height="1" fill="white"/>
-        <rect x="4" y="4" width="1" height="1" fill="white"/>
-      </svg>
-      <div>ID: 9 (Gun)</div>
-    </div>
-  </div>
-  <button onclick="document.getElementById('test-markers').style.display='none'">Hide</button>
-</div>
+
+
 
 <!-- scripts -->
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
@@ -359,161 +284,7 @@
 <script src="sounds.js"></script>
 <script src="game.js"></script>
 
-<!-- Debug helper scripts for debugging views -->
-<script>
-// Debug panel functionality
-function toggleDebugPanel() {
-  const panel = document.getElementById('debug-panel');
-  const toggle = document.getElementById('debug-toggle');
-  const testMarkers = document.getElementById('test-markers');
-  
-  if (panel.style.display === 'none' || panel.style.display === '') {
-    panel.style.display = 'block';
-    toggle.style.display = 'none';
-    testMarkers.style.display = 'block'; // Show test markers in debug mode
-  } else {
-    panel.style.display = 'none';
-    toggle.style.display = 'block';
-    testMarkers.style.display = 'none'; // Hide test markers
-  }
-}
 
-// Update debug info
-function updateDebugInfo(type, value) {
-  const element = document.getElementById('debug-' + type);
-  if (element) {
-    element.textContent = value;
-    element.style.color = value === 'error' ? '#ff6b6b' : 
-                         value === 'ready' ? '#51cf66' : 
-                         value === 'warning' ? '#ffd43b' :
-                         '#74c0fc';
-  }
-}
-
-// Enhanced console logging with debug panel updates
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-const originalConsoleWarn = console.warn;
-
-console.log = function(...args) {
-  originalConsoleLog.apply(console, args);
-  
-  // Update debug panel based on log messages
-  const message = args.join(' ');
-  if (message.includes('🎮 Start game event received') || message.includes('Game started')) {
-    updateDebugInfo('gamestate', 'starting');
-  } else if (message.includes('Camera started successfully')) {
-    updateDebugInfo('camera', 'ready');
-  } else if (message.includes('Received symbol:')) {
-    const symbol = message.split(':')[1]?.trim();
-    updateDebugInfo('symbol', symbol || 'received');
-  } else if (message.includes('ArUco detector created') || message.includes('Detection initialized')) {
-    updateDebugInfo('detection', 'ready');
-  } else if (message.includes('Processing frame')) {
-    updateDebugInfo('detection', 'processing');
-  } else if (message.includes('Found') && message.includes('markers')) {
-    updateDebugInfo('detection', 'found markers!');
-  }
-};
-
-console.error = function(...args) {
-  originalConsoleError.apply(console, args);
-  
-  const message = args.join(' ');
-  if (message.includes('Camera')) {
-    updateDebugInfo('camera', 'error');
-  } else if (message.includes('Detection') || message.includes('ArUco')) {
-    updateDebugInfo('detection', 'error');
-  }
-};
-
-console.warn = function(...args) {
-  originalConsoleWarn.apply(console, args);
-  
-  const message = args.join(' ');
-  if (message.includes('Camera')) {
-    updateDebugInfo('camera', 'warning');
-  } else if (message.includes('Video not ready') || message.includes('video not ready')) {
-    updateDebugInfo('video', 'not ready');
-  }
-};
-
-// Initialize debug info on page load
-document.addEventListener('DOMContentLoaded', function() {
-  updateDebugInfo('gamestate', 'lobby');
-  updateDebugInfo('camera', 'initializing');
-  updateDebugInfo('detection', 'waiting');
-  updateDebugInfo('video', 'waiting');
-  updateDebugInfo('libraries', 'loading');
-});
-
-// Add error boundary for uncaught errors
-window.addEventListener('error', function(e) {
-  console.error('Uncaught error:', e.error);
-  updateDebugInfo('gamestate', 'error');
-});
-
-// Check if all required files are loaded
-window.addEventListener('load', function() {
-  let missingFiles = [];
-  let loadedFiles = [];
-  
-  if (typeof io === 'undefined') {
-    missingFiles.push('socket.io');
-  } else {
-    loadedFiles.push('socket.io');
-  }
-  
-  if (typeof CV === 'undefined') {
-    missingFiles.push('cv.js');
-  } else {
-    loadedFiles.push('cv.js');
-  }
-  
-  if (typeof AR === 'undefined') {
-    missingFiles.push('aruco.js');
-  } else {
-    loadedFiles.push('aruco.js');
-  }
-  
-  if (missingFiles.length > 0) {
-    console.error('Missing files:', missingFiles.join(', '));
-    updateDebugInfo('libraries', 'error');
-    alert('Some required files failed to load: ' + missingFiles.join(', ') + 
-          '\nPlease refresh the page or check your internet connection.');
-  } else {
-    console.log('All required libraries loaded successfully:', loadedFiles.join(', '));
-    updateDebugInfo('libraries', 'ready');
-  }
-  
-  // Check video element
-  const video = document.getElementById('video');
-  if (video) {
-    video.addEventListener('loadedmetadata', function() {
-      console.log('Video metadata loaded');
-      updateDebugInfo('video', 'ready');
-    });
-    
-    video.addEventListener('canplaythrough', function() {
-      console.log('Video can play through');
-      updateDebugInfo('video', 'ready');
-    });
-  }
-});
-
-// Add test function for manual ArUco testing
-function testArUcoDetection() {
-  console.log('Testing ArUco detection manually...');
-  if (typeof processFrame === 'function') {
-    processFrame();
-  } else {
-    console.error('processFrame function not available');
-  }
-}
-
-// Make test function globally available
-window.testArUcoDetection = testArUcoDetection;
-</script>
     
   </body>
 </html>

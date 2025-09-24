@@ -129,11 +129,90 @@ body.laser-bg {
     margin-bottom: 2rem;
     box-shadow: 0 0 15px rgba(92, 236, 255, 0.3);
 }
-.player-list {
-    background: rgba(10, 12, 55, 0.6);
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+.players-list, 
+.spectators-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100%;
+}
+
+.players-list li,
+.spectators-list li {
+    background: rgba(34, 34, 59, 0.9);
+    color: #fff;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    font-size: 1.1em;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border-left: 4px solid #5cecff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    text-shadow: 0 0 6px #5cecff;
+}
+
+.players-list li:hover,
+.spectators-list li:hover {
+    background: rgba(255, 97, 198, 0.15);
+    color: #ff61c6ff;
+    border-left-color: #ff61c6ff;
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(255, 97, 198, 0.3);
+}
+
+/* Ready state styling */
+.players-list li.ready,
+.spectators-list li.ready {
+    border-left-color: #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+}
+
+.players-list li.ready:hover,
+.spectators-list li.ready:hover {
+    background: rgba(0, 255, 136, 0.2);
+}
+
+/* Empty state styling */
+.players-list:empty::after {
+    content: "No players yet...";
+    display: block;
+    color: #5cecff;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+    opacity: 0.7;
+}
+
+.spectators-list:empty::after {
+    content: "No spectators yet...";
+    display: block;
+    color: #5cecff;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+    opacity: 0.7;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .columns-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .column {
+        min-width: unset;
+        max-width: unset;
+        margin: 0 1rem;
+    }
+    
+    .players-list li,
+    .spectators-list li {
+        font-size: 1em;
+        padding: 10px 12px;
+    }
 }
 
 .player-view {
@@ -146,42 +225,41 @@ body.laser-bg {
   position: fixed;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.6); /* so you see it clearly */
+  background: rgba(0, 0, 0, 0.6); 
   z-index: 10;
 }
 
-/* reticle */
+/* reticle I liekd the blcoky reticle !*/
 .reticle {
-    position: fixed;
+    position: absolute;
     top: 50%;
-    left: 50%;
+    left: 50%;  
     transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
-    border: 3px solid #00ff88;
-    border-radius: 50%;
-    box-shadow: 0 0 20px #00ff88;
-    z-index: 15;
+    border-style: solid;
+    border-width: 4px;
+    border-radius: 20%;
     pointer-events: none;
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.4);
 }
 
 .reticle.pistol {
-    border-color: #00ff88;
-    box-shadow: 0 0 20px #00ff88;
+    width: 200px;
+  height: 200px;
+  border-color: #fff;
 }
 
 .reticle.shotgun {
     border-color: #ff6b35;
     box-shadow: 0 0 20px #ff6b35;
-    width: 120px;
-    height: 120px;
+    width: 300px;
+  height: 300px;
 }
 
 .reticle.sniper {
     border-color: #ff0055;
     box-shadow: 0 0 20px #ff0055;
-    width: 60px;
-    height: 60px;
+    width: 150px;
+  height: 150px;
 }
 
 /* Leaderboard Section Styling */
@@ -192,8 +270,25 @@ body.laser-bg {
     padding: 32px 16px;
     margin: 0 auto 32px auto;
     max-width: 900px;
+    height: fit-content;
+}
+.columns-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
 }
 
+.column {
+    flex: 1;
+    min-width: 250px;
+    max-width: 400px;
+    background: rgba(24, 24, 42, 0.8);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 0 15px rgba(92, 236, 255, 0.3);
+}
 .leaderboard-section h3 {
     color: #5cecff;
     font-family: 'Orbitron', 'Arial Black', sans-serif;
@@ -468,7 +563,7 @@ body.laser-bg {
 .weapon {
     color: #00ffe7;
     font-family: 'Orbitron', 'Arial Black', sans-serif;
-    font-size: 1.1em !important; /* Reduced from 40px */
+    font-size: 1.1em !important; 
     text-shadow: 0 0 8px #08d9d6;
     text-align: center;
 }
@@ -501,9 +596,9 @@ body.laser-bg {
 /* Toast notifications */
 .toast-notification {
     position: fixed;
-    top: 50%;
+    top: 20px; 
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%); 
     background: rgba(24, 24, 42, 0.95);
     color: #ff61c6ff;
     padding: 20px 30px;
@@ -521,3 +616,4 @@ body.laser-bg {
     font-size: 3em !important;
     padding: 30px !important;
 }
+
