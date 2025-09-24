@@ -336,7 +336,7 @@ function updateItems(players) {
     const current = getCurrentPlayer(players);
     if (socket.id === current.id) {
       weaponSpan.innerText = `${current.gun.name.toUpperCase()}`;
-      weaponIcon.src = `./assets/images/${current.gun.name.toLowerCase()}.png`;
+      weaponIcon.src = `./images/${current.gun.name.toLowerCase()}.png`;
 
       updateReticleForGun(current.gun.name);
 
